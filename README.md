@@ -1,1 +1,2 @@
 # File_Manager_Django
+Developed File Manager a web-based tool that allows users to upload and manage images, PDFs, and videos efficiently. Provided tools for image cropping and compression while ensuring uploaded files are automatically deleted after 10 days.The application enforced file size limits and daily upload caps based on user IP addresses to ensure optimal usage. This project is developed using Django for the backend development and MySQL for the database management.
