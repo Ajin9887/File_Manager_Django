@@ -1,0 +1,29 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>File Detail</title>
+</head>
+<body>
+    <h1>File Detail</h1>
+    <p>File Name: {{ file.file.name }}</p>
+    <p>Original File Size: {{ file_size_mb }} MB</p>
+    {% if compressed_file_size_mb %}
+        <p>Compressed File Size: {{ compressed_file_size_mb }} MB</p>
+        <!-- Add download link for compressed file -->
+        <a href="{{ compressed_file_url }}">Download Compressed File</a>
+    {% else %}
+        <p>File not compressed</p>
+    {% endif %}
+
+    <p>Uploaded At (IST): {{ ist_time }}</p>
+
+    <h2>Download Video Segments</h2>
+    <ul>
+        <li><a href="{% url 'download_video_segment' unique_id=file.unique_id duration=10 %}">Download 10 seconds</a></li>
+        <li><a href="{% url 'download_video_segment' unique_id=file.unique_id duration=20 %}">Download 20 seconds</a></li>
+        <li><a href="{% url 'download_video_segment' unique_id=file.unique_id duration=30 %}">Download 30 seconds</a></li>
+        <li><a href="{% url 'download_video_segment' unique_id=file.unique_id duration=60 %}">Download 60 seconds</a></li>
+    </ul>
+</body>
+</html>

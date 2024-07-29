@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload and Compress Image or Video</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+</head>
+<body>
+    <h1>Upload and Compress Image or Video</h1>
+    <form method="post" enctype="multipart/form-data" id="upload-form">
+        {% csrf_token %}
+        <input type="file" name="file" id="file-input"><br><br>
+        <div id="image-preview" style="display: none;">
+            <img id="image" style="max-width: 100%;">
+            <button type="button" id="crop-button">Crop</button>
+        </div>
+        <button type="submit" id="upload-button">Upload</button>
+    </form>
+    <p id="original-size"></p>
+    <p id="compressed-size"></p>
+    <div id="download-link"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+    <script>
+        document.getElementById('file-input').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('image').src = e.target.result;
+                    document.getElementById('image-preview').style.display = 'block';
+                    
+                    // Display original file size
+                    document.getElementById('original-size').innerText = `Original Size: ${file.size} bytes`;
+                    
+                    const cropper = new Cropper(document.getElementById('image'), {
+                        aspectRatio: 1,
+                        viewMode: 1,
+                    });
+                    document.getElementById('crop-button').addEventListener('click', function() {
+                        const canvas = cropper.getCroppedCanvas();
+                        canvas.toBlob(function(blob) {
+                            const newFile = new File([blob], file.name, { type: file.type });
+                            const dataTransfer = new DataTransfer();
+                            dataTransfer.items.add(newFile);
+                            document.getElementById('file-input').files = dataTransfer.files;
+                            
+                            // Display compressed file size
+                            document.getElementById('compressed-size').innerText = `Compressed Size: ${blob.size} bytes`;
+                            
+                            // Provide download link for compressed image
+                            const downloadLink = document.createElement('a');
+                            downloadLink.href = URL.createObjectURL(blob);
+                            downloadLink.download = 'compressed_image.jpg';
+                            downloadLink.innerText = 'Download Compressed Image';
+                            document.getElementById('download-link').innerHTML = '';
+                            document.getElementById('download-link').appendChild(downloadLink);
+                        }, 'image/jpeg', 0.7);  // Adjust quality as needed
+                    });
+                };
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+</body>
+</html>
